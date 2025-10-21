@@ -1,0 +1,34 @@
+What is the capital of France?
+London
+Berlin
+Paris
+Madrid
+3
+
+What is 2 + 2?
+3
+4
+5
+6
+2
+
+Which programming language is this?
+Python
+Java
+JavaScript
+C++
+3
+
+What color is the sky?
+Red
+Blue
+Green
+Yellow
+2
+
+Who created JavaScript?
+Brendan Eich
+Guido van Rossum
+James Gosling
+Dennis Ritchie
+1
