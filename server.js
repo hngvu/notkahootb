@@ -15,10 +15,18 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3001')
   .split(',')
   .map(origin => origin.trim());
 
+// Log CORS configuration for debugging
+console.log('🔐 CORS Configuration:');
+console.log('   Allowed Origins:', allowedOrigins);
+console.log('   Environment:', process.env.NODE_ENV || 'development');
+
 // Register CORS plugin with environment-based configuration
 fastify.register(fastifyCors, {
   origin: allowedOrigins,
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type']
 });
 
 // Register WebSocket plugin BEFORE routes
