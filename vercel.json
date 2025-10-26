@@ -8,6 +8,11 @@
   ],
   "routes": [
     {
+      "src": "/ws/(.*)",
+      "dest": "server.js",
+      "methods": ["GET", "POST", "UPGRADE"]
+    },
+    {
       "src": "/(.*)",
       "dest": "server.js"
     }
