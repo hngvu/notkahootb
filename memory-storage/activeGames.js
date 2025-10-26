@@ -103,8 +103,8 @@ export function advanceGameState(gameId, action) {
         player.lastAnswerCorrect = false;
       });
       
-      // Send first question to all players
-      broadcastToPlayers(game, {
+      // Send first question to all
+      const firstQuestion = {
         type: 'new_question',
         question: {
           text: game.questions[0].text,
@@ -113,7 +113,12 @@ export function advanceGameState(gameId, action) {
         questionNumber: 1,
         totalQuestions: game.questions.length,
         timeLimit: 20
-      });
+      };
+      
+      broadcastToAll(game, firstQuestion);
+      
+      console.log(`🎮 Broadcasting first question to ${Object.keys(game.players).length} players and host`);
+      console.log(`Question: ${game.questions[0].text}`);
       
       // Auto show results after 20 seconds
       setTimeout(() => {
@@ -126,8 +131,9 @@ export function advanceGameState(gameId, action) {
       break;
       
     case 'next_question':
-      if (game.currentQuestion < game.questions.length - 1) {
-        game.currentQuestion++;
+      game.currentQuestion++;
+      
+      if (game.currentQuestion < game.questions.length) {
         game.state = 'question';
         game.questionStartTime = Date.now();
         
@@ -135,9 +141,10 @@ export function advanceGameState(gameId, action) {
         Object.values(game.players).forEach(player => {
           player.currentAnswer = null;
           player.lastAnswerCorrect = false;
+          player.lastPoints = 0;
         });
         
-        broadcastToPlayers(game, {
+        const questionData = {
           type: 'new_question',
           question: {
             text: game.questions[game.currentQuestion].text,
@@ -146,7 +153,12 @@ export function advanceGameState(gameId, action) {
           questionNumber: game.currentQuestion + 1,
           totalQuestions: game.questions.length,
           timeLimit: 20
-        });
+        };
+        
+        broadcastToAll(game, questionData);
+        
+        console.log(`🎮 Broadcasting question ${game.currentQuestion + 1} to ${Object.keys(game.players).length} players and host`);
+        console.log(`Question: ${game.questions[game.currentQuestion].text}`);
         
         // Auto show results after 20 seconds
         const currentQ = game.currentQuestion;
@@ -156,15 +168,16 @@ export function advanceGameState(gameId, action) {
           }
         }, 20000);
         
-        console.log(`🎮 Game ${gameId} advanced to question ${game.currentQuestion + 1}`);
+        console.log(`🎮 Game ${gameId} advanced to question ${game.currentQuestion + 1}/${game.questions.length}`);
       } else {
+        // No more questions, end game
         game.state = 'finished';
         updateLeaderboard(game);
         broadcastToAll(game, {
           type: 'game_over',
           finalLeaderboard: game.leaderboard
         });
-        console.log(`🎮 Game ${gameId} finished`);
+        console.log(`🎮 Game ${gameId} finished - no more questions`);
       }
       break;
       

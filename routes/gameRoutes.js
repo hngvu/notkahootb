@@ -1,4 +1,4 @@
-import { parseQuestionFile } from '../utils/questionParser.js';
+import { parseQuestionFile, parseQuestionText } from '../utils/questionParser.js';
 import { createNewGame, getGame } from '../memory-storage/activeGames.js';
 import { HOST_PASSWORD } from '../config/constants.js';
 
@@ -17,18 +17,69 @@ export async function setupGameRoutes(fastify, options) {
     }
   });
 
-  // Upload questions and create game
+  // Upload questions from file
   fastify.post('/host/upload', async (request, reply) => {
     try {
       const data = await request.file();
       const questions = await parseQuestionFile(data);
-      
       const game = createNewGame(questions);
       
       return { 
         gameId: game.id, 
         questionCount: questions.length,
-        message: 'Game created successfully' 
+        message: 'Game created successfully',
+        questions: questions.map((q, i) => ({ 
+          number: i + 1, 
+          text: q.text 
+        }))
+      };
+    } catch (error) {
+      reply.code(400).send({ error: error.message });
+    }
+  });
+
+  // Upload questions from text
+  fastify.post('/host/upload-text', async (request, reply) => {
+    try {
+      const { questionText } = request.body;
+      
+      if (!questionText || !questionText.trim()) {
+        reply.code(400).send({ error: 'Question text is required' });
+        return;
+      }
+      
+      const questions = parseQuestionText(questionText);
+      const game = createNewGame(questions);
+      
+      return { 
+        gameId: game.id, 
+        questionCount: questions.length,
+        message: 'Game created successfully from text',
+        questions: questions.map((q, i) => ({ 
+          number: i + 1, 
+          text: q.text 
+        }))
+      };
+    } catch (error) {
+      reply.code(400).send({ error: error.message });
+    }
+  });
+
+  // Alias route (some environments may strip dashes or clients may call camelCase path)
+  fastify.post('/host/uploadText', async (request, reply) => {
+    try {
+      const { questionText } = request.body;
+      if (!questionText || !questionText.trim()) {
+        reply.code(400).send({ error: 'Question text is required' });
+        return;
+      }
+      const questions = parseQuestionText(questionText);
+      const game = createNewGame(questions);
+      return {
+        gameId: game.id,
+        questionCount: questions.length,
+        message: 'Game created successfully from text',
+        questions: questions.map((q, i) => ({ number: i + 1, text: q.text }))
       };
     } catch (error) {
       reply.code(400).send({ error: error.message });
