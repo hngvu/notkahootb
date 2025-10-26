@@ -11,15 +11,15 @@ import { setupWebSocketRoutes } from './routes/websocketRoutes.js';
 const fastify = Fastify({ logger: true });
 
 // Parse CORS origins from environment variable
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://notkahootui.vercel.app/')
-  .split(',')
-  .map(origin => origin.trim());
+// const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://notkahootui.vercel.app/')
+//   .split(',')
+//   .map(origin => origin.trim());
 
 // Log CORS configuration for debugging
 
 // Register CORS plugin with environment-based configuration
 fastify.register(fastifyCors, {
-  origin: 'https://notkahootui.vercel.app/',
+  origin: 'https://notkahootui.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
