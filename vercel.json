@@ -10,7 +10,7 @@
     {
       "src": "/ws/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "UPGRADE"]
+      "methods": ["GET", "POST", "UPGRADE", "OPTIONS"]
     },
     {
       "src": "/(.*)",
