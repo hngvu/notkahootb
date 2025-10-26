@@ -11,18 +11,15 @@ import { setupWebSocketRoutes } from './routes/websocketRoutes.js';
 const fastify = Fastify({ logger: true });
 
 // Parse CORS origins from environment variable
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3001')
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://notkahootui.vercel.app/')
   .split(',')
   .map(origin => origin.trim());
 
 // Log CORS configuration for debugging
-console.log('🔐 CORS Configuration:');
-console.log('   Allowed Origins:', allowedOrigins);
-console.log('   Environment:', process.env.NODE_ENV || 'development');
 
 // Register CORS plugin with environment-based configuration
 fastify.register(fastifyCors, {
-  origin: allowedOrigins,
+  origin: 'https://notkahootui.vercel.app/',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -41,10 +38,8 @@ fastify.register(setupWebSocketRoutes);
 const start = async () => {
   try {
     const port = process.env.PORT || 3000;
-    const host = process.env.HOST || '0.0.0.0';
+    const host = '0.0.0.0';
     await fastify.listen({ port, host });
-    console.log(`Backend server running on http://${host}:${port}`);
-    console.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
